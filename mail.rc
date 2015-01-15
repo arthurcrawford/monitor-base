@@ -1,0 +1,8 @@
+set smtp-use-starttls
+set ssl-verify=ignore
+set smtp-auth=login
+set smtp=smtp://smtp.gmail.com:587
+set from="monitor@example.com(John Doe)"
+set smtp-auth-user=monitor@example.com
+set smtp-auth-password=MyS3cur3P455w0rd!
+set nss-config-dir=/root/certs
