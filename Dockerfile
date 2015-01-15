@@ -6,7 +6,7 @@ RUN yum install -y wget
 RUN yum install -y epel-release
 RUN yum install -y expect
 RUN yum install -y httpd 
-ENV TERM=xterm
+ENV TERM xterm
 EXPOSE 80
 # Add icinga2 repo config
 RUN rpm --import http://packages.icinga.org/icinga.key
@@ -29,7 +29,7 @@ RUN yum install -y python-pip
 RUN pip install supervisor
 # Install Icinga2 web
 # Add supervisor python shell scripts to PATH
-ENV PATH=$PATH:/usr/lib/python2.6/site-packages/supervisor
+ENV PATH $PATH:/usr/lib/python2.6/site-packages/supervisor
 # Copy the supervisor config containing the icinca2 daemon command
 COPY supervisord.conf /etc/supervisord.conf
 # Run icinga2 service script once to correctly configure 
