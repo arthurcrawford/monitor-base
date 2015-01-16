@@ -35,4 +35,8 @@ COPY supervisord.conf /etc/supervisord.conf
 # Run icinga2 service script once to correctly configure 
 RUN service icinga2 start
 CMD /usr/bin/supervisord
-
+# Set up mailx for using gmail smtp
+RUN wget https://www.geotrust.com/resources/root_certificates/certificates/Equifax_Secure_Certificate_Authority.cer
+RUN mkdir /root/certs
+RUN certutil -d /root/certs -A -t TC -n "Equifax Secure Certificate Authority" -i Equifax_Secure_Certificate_Authority.cer
+COPY mail.rc /etc/mail.rc
