@@ -21,12 +21,18 @@ RUN yum install -y icinga2-ido-mysql
 # Initialize mysql by running the service script actual daemon will be controlled by supervisor
 RUN yum install -y php php-cli php-pear php-xmlrpc php-xsl php-pdo php-soap php-gd php-ldap php-mysql
 RUN yum install -y icinga-web icinga-web-mysql icinga-web-module-pnp
+RUN yum install -y icingaweb2 icingacli
+RUN yum install -y php-ZendFramework-Db-Adapter-Pdo-Mysql
+RUN sed -i "s/;date.timezone.*/date.timezone = Europe\/London/g" /etc/php.ini
 RUN service mysqld start
 COPY mysql_setup.sh mysql_setup.sh
 COPY icinga_schema.sql icinga_schema.sql
+COPY icingaweb2/mysql.schema.sql /usr/share/doc/icingaweb2/schema/mysql.schema.sql
 RUN ./mysql_setup.sh
 RUN yum install -y python-pip
 RUN pip install supervisor
+# Specific dependency of supervisor
+RUN pip install 'meld3 == 1.0.1'
 # Install Icinga2 web
 # Add supervisor python shell scripts to PATH
 ENV PATH $PATH:/usr/lib/python2.6/site-packages/supervisor
@@ -35,6 +41,8 @@ COPY supervisord.conf /etc/supervisord.conf
 # Run icinga2 service script once to correctly configure 
 RUN service icinga2 start
 CMD /usr/bin/supervisord
+RUN icinga2 feature enable command
+RUN usermod -a -G icingaweb2 apache
 # Set up mailx for using gmail smtp
 RUN wget https://www.geotrust.com/resources/root_certificates/certificates/Equifax_Secure_Certificate_Authority.cer
 RUN mkdir /root/certs
