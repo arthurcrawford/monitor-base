@@ -44,4 +44,5 @@ RUN yum install -y mailx
 RUN wget https://www.geotrust.com/resources/root_certificates/certificates/Equifax_Secure_Certificate_Authority.cer
 RUN mkdir /etc/certs
 RUN certutil -d /etc/certs -A -t TC -n "Equifax Secure Certificate Authority" -i Equifax_Secure_Certificate_Authority.cer
+RUN chmod 755 /etc/certs/*
 COPY mail.rc /etc/mail.rc
