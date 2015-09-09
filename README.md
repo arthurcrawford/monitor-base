@@ -1,8 +1,21 @@
 # monitor-base
 Icinga2 monitoring stack built on CentOS 6.
 
+Features
+--------
+
+* CentOS 6 base
+* mysql
+* apache
+* icinga2
+* icingaweb2
+* supervisord
+
 Example usage
 -------------
+
+Icinga configuration is a *massive* subject area.  This image and its example usage are simply meant as a working starting point from which to build.
+
 
 ```bash
 $ docker run -ti -p 9393:80 -p 5665:5665 mon bash
