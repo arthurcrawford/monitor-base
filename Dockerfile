@@ -42,6 +42,6 @@ RUN usermod -a -G icingaweb2 apache
 # Set up mailx for using gmail smtp
 RUN yum install -y mailx
 RUN wget https://www.geotrust.com/resources/root_certificates/certificates/Equifax_Secure_Certificate_Authority.cer
-RUN mkdir /root/certs
-RUN certutil -d /root/certs -A -t TC -n "Equifax Secure Certificate Authority" -i Equifax_Secure_Certificate_Authority.cer
+RUN mkdir /etc/certs
+RUN certutil -d /etc/certs -A -t TC -n "Equifax Secure Certificate Authority" -i Equifax_Secure_Certificate_Authority.cer
 COPY mail.rc /etc/mail.rc

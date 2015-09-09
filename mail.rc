@@ -5,4 +5,4 @@ set smtp=smtp://smtp.gmail.com:587
 set from="monitor@example.com(Monitor)"
 set smtp-auth-user=monitor@example.com
 set smtp-auth-password=MyS3cur3P455w0rd!
-set nss-config-dir=/root/certs
+set nss-config-dir=/etc/certs
