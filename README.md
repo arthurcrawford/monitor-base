@@ -32,7 +32,7 @@ set nss-config-dir=/etc/certs
 [root@e9f2cccec2b9 /]# vi /etc/icinga2/conf.d/users.conf 
 ``` 
 
-Modify the `icinga` users config file.
+Modify the `icinga` users config file and add a real email address that will receive notifications through the SMTP relay.
 
 ```bash
 object User "icingaadmin" {
@@ -70,7 +70,7 @@ The following sequence should get you up and running with a basic set of out-of-
 
 Point browser at `http://192.168.99.100:9393/icingaweb2/`
 
-Click link `web-based setup-wizard`.
+Click the link `web-based setup-wizard`.
 
 ```bash
 [root@e9f2cccec2b9 /]# icingacli setup token create
@@ -81,8 +81,11 @@ Enter `2f4483a14b3d87cc` into the `Setup Token` field on the web page.
 
 On the next page leave the `Monitoring` section checked.
 
+Enter the following information into the subsequent wizard pages.
+
 ####Icinga Web 2
-* Next
+
+    [ Next ]
 
 ####Authentication
 
