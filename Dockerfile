@@ -46,3 +46,5 @@ RUN mkdir /etc/certs
 RUN certutil -d /etc/certs -A -t TC -n "Equifax Secure Certificate Authority" -i Equifax_Secure_Certificate_Authority.cer
 RUN chmod 755 /etc/certs/*
 COPY mail.rc /etc/mail.rc
+COPY ./docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]

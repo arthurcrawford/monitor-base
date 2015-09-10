@@ -16,13 +16,23 @@ Example usage
 
 Icinga configuration is a *massive* subject area.  This image and its example usage are simply meant as a working starting point from which to build.
 
+The following is a typical `run` command that could be used to create a container from this image.
 
 ```bash
-$ docker run -ti -p 9393:80 -p 5665:5665 mon bash
-
+  docker run \
+    -e SMTP_AUTH_USER=my.email@gmail.com \
+    -e SMTP_AUTH_PASSWORD=my_email_password \
+    -e ICINGA_ADMIN_EMAIL=icinga_admin@acme.com \
+    -ti \
+    -p 9393:80 \
+    -p 5665:5665 \
+    mon \
+    bash
 ```
 
-Exposes web port `9393` on localhost and icinga port 5665.
+The environment variables `SMTP_AUTH_USER` and `SMTP_AUTH_PASSWORD` are written to the file `/etc/mail.rc`. They are used by `mailx` to relay email through gmail. 
+
+This run command also exposes web port `9393` on localhost and icinga port 5665.
 
 ```bash
 [root@e9f2cccec2b9 /]# vi /etc/mail.rc
