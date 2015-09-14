@@ -23,11 +23,9 @@ RUN yum install -y php-ZendFramework-Db-Adapter-Pdo-Mysql
 # Icingaweb2 requires a default timezone set in php.ini
 RUN sed -i "s/;date.timezone.*/date.timezone = Europe\/London/g" /etc/php.ini
 # Setup mysql
-RUN service mysqld start
 COPY mysql_setup.sh mysql_setup.sh
 COPY icinga_schema.sql icinga_schema.sql
 COPY icingaweb2/mysql.schema.sql /usr/share/doc/icingaweb2/schema/mysql.schema.sql
-RUN ./mysql_setup.sh
 # Setup python environment for 'supervisord'
 RUN yum install -y python-pip
 RUN pip install supervisor
@@ -39,6 +37,7 @@ RUN service icinga2 start
 CMD /usr/bin/supervisord
 RUN icinga2 feature enable command
 RUN usermod -a -G icingaweb2 apache
+RUN icingacli setup config directory --group icingaweb2
 # Set up mailx for using gmail smtp
 RUN yum install -y mailx
 RUN wget https://www.geotrust.com/resources/root_certificates/certificates/Equifax_Secure_Certificate_Authority.cer

@@ -19,9 +19,7 @@ Features
 Example usage
 -------------
 
-Pull the image to your Docker host.
-
-    $ sudo docker pull arthurcrawford/monitorbase
+Icinga configuration is a *massive* subject area.  This image and its example usage are simply meant as a working starting point from which to build.
 
 The following is a typical `run` command that could be used to create a container from this image running an interactive `bash` shell.
 
@@ -33,7 +31,7 @@ The following is a typical `run` command that could be used to create a containe
     -ti \
     -p 9393:80 \
     -p 5665:5665 \
-    arthurcrawford/monitor-base \
+    mon \
     bash
 ```
 
@@ -88,6 +86,23 @@ object UserGroup "icingaadmins" {
 }
 
 ``` 
+
+Persistent Configuration 
+------------------------
+By mapping the configuration directory and the `mysql` database files to a Docker host volume, the container may be destroyed and re-created without loss of any of the stored data or configuration.
+
+To do this, you can add the following `-v` arguments to the Docker run command:
+
+```bash
+docker run \
+[...]    
+-v /tmp/mysql:/var/lib/mysql \
+-v /tmp/icingaweb2:/etc/icingaweb2
+[...]
+```
+
+In the example above, `/tmp/mysql` and `/tmp/icingaweb2` would be suitable directories on the Docker host.
+
 
 Web Based Setup Wizard
 ----------------------
