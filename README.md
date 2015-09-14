@@ -31,7 +31,7 @@ The following is a typical `run` command that could be used to create a containe
     -ti \
     -p 9393:80 \
     -p 5665:5665 \
-    mon \
+    arthurcrawford/monitor-base \
     bash
 ```
 
