@@ -1,22 +1,27 @@
 # monitor-base
 Icinga2 monitoring stack built on CentOS 6.
 
+This image is intended as a reference or starting point for building an icinga2 monitoring stack.  Icinga2 setup and configuration is tricky and it helps to have a working image to start from.
+
+In a production environment it is most likely you would want to do additional work around improvements to security and factoring out of dependent processes such as the database back-end and web server into separate Docker images.
+
 Features
 --------
 
-* CentOS 6 base
-* mysql
-* apache
-* icinga2
-* icingaweb2
-* supervisord
+* **CentOS 6** - official base image
+* **icinga2** - from official icinga repo
+* **icingaweb2** - front end
+* **mysql** - db back-end
+* **apache** - web server
+* **supervisord** - process coordination (icinga + apache + mysql) 
+* **mailx** - mail relay through Google SMTP
 
 Example usage
 -------------
 
 Icinga configuration is a *massive* subject area.  This image and its example usage are simply meant as a working starting point from which to build.
 
-The following is a typical `run` command that could be used to create a container from this image.
+The following is a typical `run` command that could be used to create a container from this image running an interactive `bash` shell.
 
 ```bash
   docker run \
@@ -30,41 +35,50 @@ The following is a typical `run` command that could be used to create a containe
     bash
 ```
 
-The environment variables `SMTP_AUTH_USER` and `SMTP_AUTH_PASSWORD` are written to the file `/etc/mail.rc`. They are used by `mailx` to relay email through gmail. 
-
-This run command also exposes web port `9393` on localhost and icinga port 5665.
+To kick things off inside the interactive shell, run the process coordinator `supervisord` as follows:
 
 ```bash
-[root@e9f2cccec2b9 /]# vi /etc/mail.rc
+[root@22e910d8067a /]# supervisord &
+[...]
+2015-09-09 17:30:09,662 INFO spawned: 'mysql' with pid 127
+2015-09-09 17:30:09,665 INFO spawned: 'http' with pid 128
+2015-09-09 17:30:09,669 INFO spawned: 'icinga' with pid 129
+[...]
 ```
 
-Modify the config for `mailx` in /etc/mail.rc.  For example, the following uses the gmail SMTP service for relaying mail.
+This should start all the necessary sub-processes, including the `mysql` database, `apache` web server and the icinga server itself.
+
+This example usage exposes web port `9393` on the Docker host for the web console at the URL `http://docker-host:9393/icingaweb2`.  The other port, 5665, is used by icinga for master-slave communications with other icinga instances.
+
+Inspect the `mailx` configuration in the container to see how mail will be relayed.
 
 ```bash
+[root@e9f2cccec2b9 /]# cat /etc/mail.rc
+
 set smtp-use-starttls
 set ssl-verify=ignore
 set smtp-auth=login
 set smtp=smtp://smtp.gmail.com:587
 set from="monitor@example.com(Monitor)"
-set smtp-auth-user=monitor@example.com << your gmail SMTP login
-set smtp-auth-password=MyS3cur3P455w0rd! << your gmail SMTP password
+set smtp-auth-user=my.email@gmail.com    << your gmail SMTP login
+set smtp-auth-password=my_email_password << your gmail SMTP password
 set nss-config-dir=/etc/certs                       
 ```
 
-```bash
-[root@e9f2cccec2b9 /]# vi /etc/icinga2/conf.d/users.conf 
-``` 
+The environment variables `SMTP_AUTH_USER` and `SMTP_AUTH_PASSWORD`, specified in the Docker run command, are patched into this file by the default Docker entry-point script `docker-entrypoint.sh`. 
 
-Modify the `icinga` users config file and add a real email address that will receive notifications through the SMTP relay.
+The final environment variable `ICINGA_ADMIN_EMAIL` is used also by `docker-entrypoint.sh` to inject an email address for the icinga admin user.  If the icinga configuration results in notifications being sent to the user `icingaadmin` they will, therefore, be relayed to this email address.
 
 ```bash
+[root@e9f2cccec2b9 /]# cat /etc/icinga2/conf.d/users.conf 
+
 object User "icingaadmin" {
   import "generic-user"
 
   display_name = "Icinga 2 Admin"
   groups = [ "icingaadmins" ]
 
-  email = "icinga@localhost"  << target email for notifications
+  email = "icinga_admin@acme.com"  << admin notification email 
 }
 
 object UserGroup "icingaadmins" {
@@ -73,25 +87,13 @@ object UserGroup "icingaadmins" {
 
 ``` 
 
-Run the process supervisor `supervisord`.
-
-```bash
-# supervisord &
-[...]
-2015-09-09 17:30:09,662 INFO spawned: 'mysql' with pid 127
-2015-09-09 17:30:09,665 INFO spawned: 'http' with pid 128
-2015-09-09 17:30:09,669 INFO spawned: 'icinga' with pid 129
-[...]
-```
-
-This should start all the necessary processes, including the `mysql` database, `apache` web server and the icinga server itself.
-
 Web Based Setup Wizard
 ----------------------
+When you first access the web console URL, you will have to go through the web-based configuration "wizard".  *[I would like to have automated this but haven't figured out the best way yet]*
 
-The following sequence should get you up and running with a basic set of out-of-the-box  configuration.
+The following sequence should get you up and running with a basic set of out-of-the-box configuration.
 
-Point browser at `http://192.168.99.100:9393/icingaweb2/`
+Point browser at `http://docker-host:9393/icingaweb2/`
 
 Click the link `web-based setup-wizard`.
 
