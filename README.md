@@ -19,7 +19,9 @@ Features
 Example usage
 -------------
 
-Icinga configuration is a *massive* subject area.  This image and its example usage are simply meant as a working starting point from which to build.
+Pull the image to your Docker host.
+
+    $ sudo docker pull arthurcrawford/monitorbase
 
 The following is a typical `run` command that could be used to create a container from this image running an interactive `bash` shell.
 
@@ -31,7 +33,7 @@ The following is a typical `run` command that could be used to create a containe
     -ti \
     -p 9393:80 \
     -p 5665:5665 \
-    mon \
+    arthurcrawford/monitor-base \
     bash
 ```
 
