@@ -87,21 +87,33 @@ object UserGroup "icingaadmins" {
 
 ``` 
 
-Persistent Configuration 
+Persisting Configuration Using Volumes
 ------------------------
-By mapping the configuration directory and the `mysql` database files to a Docker host volume, the container may be destroyed and re-created without loss of any of the stored data or configuration.
+It is likely that you will want to run your monitoring container as a service.  It may be necessary, therefore, to kill the container from time to time.  But you don't want to lose Icinga's state and configuration everytime you do this.
+
+To solve this, you may map the configuration directory and the `mysql` database files to corresponding Docker host volumes. The container then may be destroyed and re-created without loss of any of the stored data or configuration.
 
 To do this, you can add the following `-v` arguments to the Docker run command:
 
 ```bash
-docker run \
-[...]    
--v /tmp/mysql:/var/lib/mysql \
--v /tmp/icingaweb2:/etc/icingaweb2
-[...]
+  docker run \
+    -e SMTP_AUTH_USER=my.email@gmail.com \
+    -e SMTP_AUTH_PASSWORD=my_email_password \
+    -e ICINGA_ADMIN_EMAIL=icinga_admin@acme.com \
+    -ti \
+    -p 9393:80 \
+    -p 5665:5665 \
+    -v /tmp/mysql:/var/lib/mysql \        << mysql database files
+    -v /tmp/icingaweb2:/etc/icingaweb2 \  << icinga static config
+    arthurcrawford/monitor-base \
+    bash
 ```
 
-In the example above, `/tmp/mysql` and `/tmp/icingaweb2` would be suitable directories on the Docker host.
+In the example above, `/tmp/mysql` and `/tmp/icingaweb2` represent your chosen persistent directories on the Docker host.  
+
+The directory `/var/lib/mysql` is where `mysql` stores its data in the container.  
+
+The directory `/etc/icingaweb2` is where the Icinga stores its setup configurations.
 
 
 Web Based Setup Wizard
